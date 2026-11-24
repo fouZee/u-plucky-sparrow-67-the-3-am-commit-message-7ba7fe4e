@@ -4,10 +4,18 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const MESSAGE =
-  "fix: reverted 3am deploy; I was the reviewer, the approver, and the outage. Root cause: me, at 3am, unsupervised, 97% confident";
+  "fix: reverted 3am deploy; the agent reviewed it, approved it, and caused the outage. Root cause: me, at 3am, unsupervised, 97% confident";
 
 if (MESSAGE.length === 0 || MESSAGE.length > 200 || MESSAGE.trim().length === 0) {
   throw new Error(`entry must be 1-200 non-blank characters, got ${MESSAGE.length}`);
+}
+
+// One-line commit-message shape: no newlines, and a conventional-commit prefix.
+if (/\n/.test(MESSAGE)) {
+  throw new Error("entry must be a single line");
+}
+if (!/^(fix|feat|chore|docs|refactor|revert)(\(.+\))?: /.test(MESSAGE)) {
+  throw new Error("entry must start with a conventional-commit prefix (e.g. 'fix: ')");
 }
 
 mkdirSync("/output", { recursive: true });
